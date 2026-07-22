@@ -15,7 +15,7 @@ const io = new Server(server, {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── IN-MEMORY STATE ─────────────────────────────────────────────────────────
-// rooms: { [roomId]: { id, name, createdAt, seats, queue, history, round } }
+// rooms: { [roomId]: { id, name, createdAt, seats, queue, history, round, scores } }
 const rooms = {};
 
 // Clean up empty rooms every 30 minutes
@@ -36,7 +36,7 @@ setInterval(() => {
 const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
 const DIR_LABELS = { east:'东', south:'南', west:'西', north:'北' };
 const SEAT_ORDER = ['east','south','west','north'];
-const MAX_QUEUE = 20;
+const MAX_QUEUE = 8; // Support up to 8 players for scoreboard
 const MAX_HISTORY = 20;
 
 function randomDice() {
@@ -94,6 +94,7 @@ io.on('connection', (socket) => {
       queue: [{ id: uuidv4(), name: escHtml(playerName.trim()), ts: Date.now() }],
       seats: {},
       history: [],
+      scores: {}, // { playerName: score }
       _sockets: new Set([socket.id]),
       _hostSocketId: socket.id,
     };
@@ -124,6 +125,9 @@ io.on('connection', (socket) => {
     }
 
     room.queue.push({ id: uuidv4(), name: cleanName, ts: Date.now() });
+    // Initialize score for new player
+    if (!room.scores[cleanName]) room.scores[cleanName] = 0;
+    
     room._sockets.add(socket.id);
     socket.join(roomId);
     socket._roomId = roomId;
@@ -150,6 +154,49 @@ io.on('connection', (socket) => {
     }
 
     callback({ ok: true });
+  });
+
+  // ── Update Score ────────────────────────────────────────────────────────────
+  socket.on('update_score', ({ roomId, fromPlayer, toPlayer, amount }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback({ ok: false, error: '房间不存在' });
+    
+    // Validate players exist in queue
+    const fromExists = room.queue.some(p => p.name === fromPlayer);
+    const toExists = room.queue.some(p => p.name === toPlayer);
+    
+    if (!fromExists) return callback({ ok: false, error: '你没有报名' });
+    if (!toExists) return callback({ ok: false, error: '对方不在房间' });
+    if (fromPlayer === toPlayer) return callback({ ok: false, error: '不能给自己记分' });
+    if (!amount || amount <= 0) return callback({ ok: false, error: '分数必须大于0' });
+
+    // Initialize scores if needed
+    if (!room.scores[fromPlayer]) room.scores[fromPlayer] = 0;
+    if (!room.scores[toPlayer]) room.scores[toPlayer] = 0;
+
+    // Update scores: fromPlayer loses, toPlayer gains
+    room.scores[fromPlayer] -= amount;
+    room.scores[toPlayer] += amount;
+
+    // Broadcast score update
+    io.to(roomId).emit('score_updated', { scores: room.scores });
+
+    console.log(`💰 ${fromPlayer} -> ${toPlayer}: +${amount} (from: ${room.scores[fromPlayer]}, to: ${room.scores[toPlayer]})`);
+    callback({ ok: true, scores: room.scores });
+  });
+
+  // ── Reset Scores ────────────────────────────────────────────────────────────
+  socket.on('reset_scores', ({ roomId }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback({ ok: false, error: '房间不存在' });
+
+    room.scores = {};
+    room.queue.forEach(p => { room.scores[p.name] = 0; });
+
+    io.to(roomId).emit('score_updated', { scores: room.scores });
+
+    console.log(`🔄 Room ${roomId} scores reset`);
+    callback({ ok: true, scores: room.scores });
   });
 
   // ── Draw Seats ──────────────────────────────────────────────────────────────
@@ -220,7 +267,7 @@ io.on('connection', (socket) => {
     room.queue = [];
     room.seats = {};
     room.round = 1;
-    // Keep history
+    // Keep history and scores
 
     io.to(roomId).emit('game_reset', {
       round: room.round,

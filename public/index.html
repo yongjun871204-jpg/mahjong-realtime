@@ -31,6 +31,12 @@
     .room-badge { display: inline-block; background: rgba(0,0,0,.4); border: 1px solid rgba(255,213,79,.3); color: var(--gold); padding: 4px 16px; border-radius: 20px; font-size: .8rem; margin-top: 8px; letter-spacing: .1em; }
     .room-badge .room-id { font-family: monospace; font-size: .9rem; }
 
+    /* ── MODE SWITCHER ── */
+    .mode-switcher { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+    .mode-btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: rgba(245,240,225,.6); padding: 10px 24px; border-radius: 12px; cursor: pointer; font-size: .9rem; transition: all .2s; }
+    .mode-btn.active { background: linear-gradient(135deg,var(--gold-dark),var(--gold)); color: var(--dark); border-color: var(--gold); font-weight: bold; }
+    .mode-btn:hover:not(.active) { background: rgba(255,255,255,.12); }
+
     /* ── SECTION CARDS ── */
     .card {
       background: rgba(0,0,0,.3); border: 1px solid rgba(255,213,79,.12);
@@ -91,6 +97,88 @@
     .seat.filled.rolling.south { transform: translateY(-50%) !important; }
     .seat.can-roll { cursor: pointer; }
     .seat.can-roll:hover { filter: brightness(1.1); }
+
+    /* ── SCOREBOARD MODE ── */
+    .scoreboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 600px) {
+      .scoreboard-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .score-player {
+      background: rgba(0,0,0,.4);
+      border: 2px solid rgba(255,213,79,.2);
+      border-radius: 16px;
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+    }
+    .score-player:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .score-player.me { border-color: #4caf50; background: rgba(76,175,80,.1); }
+    .score-player.me::after {
+      content: '我';
+      position: absolute; top: -8px; right: -8px;
+      background: #4caf50; color: #fff;
+      font-size: .65rem; padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .score-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg,var(--gold-dark),var(--gold));
+      color: var(--dark); display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: bold; margin: 0 auto 10px;
+    }
+    .score-player.me .score-avatar { background: linear-gradient(135deg,#4caf50,#8bc34a); color: #fff; }
+    .score-name { font-size: .95rem; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .score-value {
+      font-size: 1.6rem; font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+    .score-value.positive { color: #4caf50; }
+    .score-value.negative { color: #f44336; }
+    .score-value.zero { color: rgba(245,240,225,.6); }
+
+    /* ── SCORE INPUT MODAL ── */
+    .score-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,.85);
+      z-index: 100; display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    .score-modal.visible { display: flex; }
+    .score-modal-card {
+      background: linear-gradient(135deg,#1a4a2e,#0d3b12);
+      border: 3px solid var(--gold); border-radius: 22px;
+      padding: 28px; text-align: center; max-width: 320px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .score-modal-card h3 { color: var(--gold); margin-bottom: 16px; }
+    .score-modal-card .target-name { color: #4caf50; font-weight: bold; }
+    .score-input-wrap { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 20px 0; }
+    .score-input-wrap button {
+      width: 44px; height: 44px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,.1); color: var(--cream);
+      font-size: 1.4rem; cursor: pointer; transition: all .2s;
+    }
+    .score-input-wrap button:hover { background: var(--gold); color: var(--dark); }
+    .score-input-wrap input {
+      width: 100px; text-align: center; font-size: 2rem;
+      background: rgba(0,0,0,.3); border: 2px solid rgba(255,213,79,.3);
+      border-radius: 12px; padding: 10px; color: var(--cream);
+    }
+    .score-quick-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
+    .score-quick-btns button {
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+      color: var(--cream); padding: 8px 16px; border-radius: 8px;
+      cursor: pointer; font-size: .9rem;
+    }
+    .score-quick-btns button:hover { background: var(--gold); color: var(--dark); }
+    .score-modal-actions { display: flex; gap: 10px; }
+    .score-modal-actions .btn { flex: 1; }
 
     /* ── QUEUE ── */
     .queue-list { display: flex; flex-wrap: wrap; gap: 10px; min-height: 44px; }
@@ -264,6 +352,31 @@
   <span id="connText">连接中...</span>
 </div>
 
+<!-- ── SCORE INPUT MODAL ── -->
+<div class="score-modal" id="scoreModal">
+  <div class="score-modal-card">
+    <h3>给 <span class="target-name" id="targetName"></span> 记分</h3>
+    <div class="score-quick-btns">
+      <button onclick="setScoreAmount(10)">+10</button>
+      <button onclick="setScoreAmount(20)">+20</button>
+      <button onclick="setScoreAmount(50)">+50</button>
+      <button onclick="setScoreAmount(100)">+100</button>
+    </div>
+    <div class="score-input-wrap">
+      <button onclick="adjustScore(-10)">−</button>
+      <input type="number" id="scoreAmount" value="10" min="1" />
+      <button onclick="adjustScore(10)">+</button>
+    </div>
+    <p style="font-size:.8rem;color:rgba(245,240,225,.5);margin-bottom:16px;">
+      你将 <span id="myChange" style="color:#f44336;font-weight:bold;">-10</span>，对方 <span id="targetChange" style="color:#4caf50;font-weight:bold;">+10</span>
+    </p>
+    <div class="score-modal-actions">
+      <button class="btn btn-secondary" onclick="closeScoreModal()">取消</button>
+      <button class="btn btn-primary" onclick="confirmScore()">确认</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── ROLL RESULT OVERLAY ── -->
 <div class="roll-overlay" id="rollOverlay">
   <div class="roll-result-card">
@@ -338,6 +451,12 @@
       </div>
     </div>
 
+    <!-- Mode Switcher -->
+    <div class="mode-switcher">
+      <button class="mode-btn active" id="modeSignup" onclick="switchMode('signup')">📝 报名模式</button>
+      <button class="mode-btn" id="modeScore" onclick="switchMode('score')">💰 记分模式</button>
+    </div>
+
     <!-- Share -->
     <div class="card">
       <div class="share-row">
@@ -358,44 +477,65 @@
 
     <!-- Viewer Notice (only when not joined) -->
     <div class="viewer-notice" id="viewerNotice">
-      <p>👀 你正在围观这个房间，报名后才能参与抽签</p>
+      <p>👀 你正在围观这个房间，报名后才能参与抽签或记分</p>
       <form class="signup-form" onsubmit="handleSignup(event)">
         <input type="text" id="nameInput" placeholder="输入名字报名" maxlength="12" autocomplete="off" />
         <button type="submit" class="btn btn-primary" id="signupBtn">立即报名</button>
       </form>
     </div>
 
-    <!-- Table -->
-    <div class="round-info">
-      <span class="round-badge" id="roundBadge">第 1 局</span>
-    </div>
-    <div class="table-wrapper">
-      <div class="mahjong-table">
-        <div class="table-center"></div>
-        <div class="dice-center">
-          <div class="dice-rolling-text" id="diceRollingText">🎲 摇号中...</div>
+    <!-- SIGNUP MODE -->
+    <div id="signupMode">
+      <!-- Table -->
+      <div class="round-info">
+        <span class="round-badge" id="roundBadge">第 1 局</span>
+      </div>
+      <div class="table-wrapper">
+        <div class="mahjong-table">
+          <div class="table-center"></div>
+          <div class="dice-center">
+            <div class="dice-rolling-text" id="diceRollingText">🎲 摇号中...</div>
+          </div>
+          <div class="seat east  empty" id="seat-east"  onclick="rerollSeat('east')"><div class="seat-dir">东</div><div class="seat-name">等待入座</div><div class="seat-dice" id="dice-east"></div></div>
+          <div class="seat south empty" id="seat-south" onclick="rerollSeat('south')"><div class="seat-dir">南</div><div class="seat-name">等待入座</div><div class="seat-dice" id="dice-south"></div></div>
+          <div class="seat west  empty" id="seat-west"  onclick="rerollSeat('west')"><div class="seat-dir">西</div><div class="seat-name">等待入座</div><div class="seat-dice" id="dice-west"></div></div>
+          <div class="seat north empty" id="seat-north" onclick="rerollSeat('north')"><div class="seat-dir">北</div><div class="seat-name">等待入座</div><div class="seat-dice" id="dice-north"></div></div>
         </div>
-        <div class="seat east  empty" id="seat-east"  onclick="rerollSeat('east')"><div class="seat-dir">东</div><div class="seat-name">等待入座</div><div class="seat-dice" id="dice-east"></div></div>
-        <div class="seat south empty" id="seat-south" onclick="rerollSeat('south')"><div class="seat-dir">南</div><div class="seat-name">等待入座</div><div class="seat-dice" id="dice-south"></div></div>
-        <div class="seat west  empty" id="seat-west"  onclick="rerollSeat('west')"><div class="seat-dir">西</div><div class="seat-name">等待入座</div><div class="seat-dice" id="dice-west"></div></div>
-        <div class="seat north empty" id="seat-north" onclick="rerollSeat('north')"><div class="seat-dir">北</div><div class="seat-name">等待入座</div><div class="seat-dice" id="dice-north"></div></div>
+      </div>
+
+      <!-- Queue -->
+      <div class="card">
+        <div class="section-title">📝 报名队列</div>
+        <div class="queue-list" id="queueList">
+          <div class="queue-empty" id="queueEmpty">暂无报名，来凑一桌？</div>
+        </div>
+        <p class="player-count"><span id="queueCount">0</span> 人已报名（至少需要 4 人）</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn btn-primary" id="drawBtn" onclick="drawSeats()" disabled>🎲 抽签入座</button>
+        <button class="btn btn-secondary" onclick="resetGame()">🔄 重新开局</button>
+        <button class="btn btn-ghost" onclick="goHome()">🏠 返回首页</button>
       </div>
     </div>
 
-    <!-- Queue -->
-    <div class="card">
-      <div class="section-title">📝 报名队列</div>
-      <div class="queue-list" id="queueList">
-        <div class="queue-empty" id="queueEmpty">暂无报名，来凑一桌？</div>
+    <!-- SCORE MODE -->
+    <div id="scoreMode" style="display:none">
+      <div class="card">
+        <div class="section-title">💰 实时记分板</div>
+        <p style="text-align:center;font-size:.85rem;color:rgba(245,240,225,.5);margin-bottom:16px;">
+          点击对方头像给对方加分，你的分数会自动减少
+        </p>
+        <div class="scoreboard-grid" id="scoreboardGrid">
+          <!-- Score players will be rendered here -->
+        </div>
       </div>
-      <p class="player-count"><span id="queueCount">0</span> 人已报名（至少需要 4 人）</p>
-    </div>
 
-    <!-- Actions -->
-    <div class="actions">
-      <button class="btn btn-primary" id="drawBtn" onclick="drawSeats()" disabled>🎲 抽签入座</button>
-      <button class="btn btn-secondary" onclick="resetGame()">🔄 重新开局</button>
-      <button class="btn btn-ghost" onclick="goHome()">🏠 返回首页</button>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="resetScores()">🔄 重置分数</button>
+        <button class="btn btn-ghost" onclick="goHome()">🏠 返回首页</button>
+      </div>
     </div>
 
     <!-- History -->
@@ -419,7 +559,10 @@ let currentRound = 1;
 let queue = [];
 let seats = {};
 let history = [];
+let scores = {}; // { playerName: score }
 let isRolling = false;
+let currentMode = 'signup';
+let scoreTarget = null; // Name of player being scored
 
 // ─── LOCAL STORAGE ────────────────────────────────────────────────────────────
 const LS_KEY_NAME = 'mahjong_name';
@@ -439,10 +582,8 @@ function init() {
   const savedName = loadName();
 
   if (roomId) {
-    // Has room ID - enter as viewer first
     enterRoomAsViewer(roomId, savedName);
   } else {
-    // No room - show landing
     showLanding();
   }
 }
@@ -458,14 +599,13 @@ function enterRoomAsViewer(roomId, savedName) {
       return;
     }
 
-    // Update state from room data
     currentRoomId = res.room.id;
     currentRound = res.room.round || 1;
     queue = res.room.queue || [];
     seats = res.room.seats || {};
     history = res.room.history || [];
+    scores = res.room.scores || {};
 
-    // Check if I'm already in queue (by saved name)
     if (savedName) {
       const me = queue.find(p => p.name === savedName);
       if (me) {
@@ -480,6 +620,7 @@ function enterRoomAsViewer(roomId, savedName) {
     renderQueue();
     renderSeats();
     renderHistory();
+    renderScoreboard();
     updateRoundBadge();
     updateDrawBtn();
     updateMyStatus();
@@ -493,7 +634,6 @@ function connectSocket() {
 
   socket.on('connect', () => {
     updateConnStatus('connected');
-    // Re-join room if we have one
     if (currentRoomId && myPlayerName) {
       socket.emit('join_room', { roomId: currentRoomId, playerName: myPlayerName });
     } else if (currentRoomId) {
@@ -507,7 +647,7 @@ function connectSocket() {
   socket.on('room_update', (data) => {
     queue = data.queue || [];
     seats = data.seats || {};
-    // Update my player ID if name matches
+    scores = data.scores || {};
     if (myPlayerName) {
       const me = queue.find(p => p.name === myPlayerName);
       if (me) myPlayerId = me.id;
@@ -515,6 +655,7 @@ function connectSocket() {
     }
     renderQueue();
     renderSeats();
+    renderScoreboard();
     updateDrawBtn();
     updateMyStatus();
   });
@@ -541,9 +682,13 @@ function connectSocket() {
     showToast(`🔄 第 ${currentRound} 局开始！`);
   });
 
+  socket.on('score_updated', (data) => {
+    scores = data.scores;
+    renderScoreboard();
+  });
+
   socket.on('player_left', (data) => {
     if (data.name === myPlayerName) {
-      // I was removed
       myPlayerId = null;
       myPlayerName = null;
       updateMyStatus();
@@ -571,7 +716,6 @@ function showLanding() {
   myPlayerId = null;
   myPlayerName = null;
 
-  // Pre-fill saved name
   const savedName = loadName();
   if (savedName) {
     document.getElementById('createName').value = savedName;
@@ -590,6 +734,14 @@ function switchTab(tab) {
   document.getElementById('tabJoin').classList.toggle('active', tab === 'join');
   document.getElementById('panelCreate').classList.toggle('active', tab === 'create');
   document.getElementById('panelJoin').classList.toggle('active', tab === 'join');
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('modeSignup').classList.toggle('active', mode === 'signup');
+  document.getElementById('modeScore').classList.toggle('active', mode === 'score');
+  document.getElementById('signupMode').style.display = mode === 'signup' ? 'block' : 'none';
+  document.getElementById('scoreMode').style.display = mode === 'score' ? 'block' : 'none';
 }
 
 function goHome() {
@@ -612,6 +764,7 @@ function handleCreate() {
     queue = res.room.queue;
     seats = {};
     history = [];
+    scores = {};
 
     saveName(name);
     window.location.hash = currentRoomId;
@@ -619,6 +772,7 @@ function handleCreate() {
     renderShareUrl();
     renderQueue();
     renderSeats();
+    renderScoreboard();
     updateRoundBadge();
     updateDrawBtn();
     updateMyStatus();
@@ -645,6 +799,7 @@ function handleJoin() {
     queue = res.room.queue;
     seats = res.room.seats || {};
     history = res.room.history || [];
+    scores = res.room.scores || {};
 
     saveName(name);
     window.location.hash = currentRoomId;
@@ -653,6 +808,7 @@ function handleJoin() {
     renderQueue();
     renderSeats();
     renderHistory();
+    renderScoreboard();
     updateRoundBadge();
     updateDrawBtn();
     updateMyStatus();
@@ -673,9 +829,11 @@ function handleSignup(e) {
     myPlayerName = name;
     myPlayerId = res.room.queue.find(p => p.name === name)?.id;
     queue = res.room.queue;
+    scores = res.room.scores || {};
 
     saveName(name);
     renderQueue();
+    renderScoreboard();
     updateDrawBtn();
     updateMyStatus();
     document.getElementById('nameInput').value = '';
@@ -710,6 +868,96 @@ function updateMyStatus() {
     myStatus.style.display = 'none';
     viewerNotice.style.display = 'block';
   }
+}
+
+// ─── SCOREBOARD FUNCTIONS ─────────────────────────────────────────────────────
+function renderScoreboard() {
+  const grid = document.getElementById('scoreboardGrid');
+  if (!queue.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:rgba(245,240,225,.3);padding:40px;">暂无玩家，先报名吧</div>';
+    return;
+  }
+
+  grid.innerHTML = queue.map(p => {
+    const score = scores[p.name] || 0;
+    const scoreClass = score > 0 ? 'positive' : score < 0 ? 'negative' : 'zero';
+    const isMe = p.name === myPlayerName;
+    const canClick = myPlayerName && p.name !== myPlayerName;
+
+    return `
+      <div class="score-player ${isMe ? 'me' : ''}" ${canClick ? `onclick="openScoreModal('${p.name}')"` : ''}>
+        <div class="score-avatar">${p.name.charAt(0)}</div>
+        <div class="score-name">${escHtml(p.name)} ${isMe ? '(我)' : ''}</div>
+        <div class="score-value ${scoreClass}">${score > 0 ? '+' : ''}${score}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openScoreModal(targetName) {
+  if (!myPlayerName || targetName === myPlayerName) return;
+  scoreTarget = targetName;
+  document.getElementById('targetName').textContent = targetName;
+  document.getElementById('scoreAmount').value = 10;
+  updateScorePreview();
+  document.getElementById('scoreModal').classList.add('visible');
+}
+
+function closeScoreModal() {
+  document.getElementById('scoreModal').classList.remove('visible');
+  scoreTarget = null;
+}
+
+function setScoreAmount(amount) {
+  document.getElementById('scoreAmount').value = amount;
+  updateScorePreview();
+}
+
+function adjustScore(delta) {
+  const input = document.getElementById('scoreAmount');
+  input.value = Math.max(1, parseInt(input.value || 0) + delta);
+  updateScorePreview();
+}
+
+function updateScorePreview() {
+  const amount = parseInt(document.getElementById('scoreAmount').value || 0);
+  document.getElementById('myChange').textContent = '-' + amount;
+  document.getElementById('targetChange').textContent = '+' + amount;
+}
+
+function confirmScore() {
+  if (!scoreTarget || !currentRoomId) return;
+  const amount = parseInt(document.getElementById('scoreAmount').value || 0);
+  if (amount <= 0) return;
+
+  socket.emit('update_score', {
+    roomId: currentRoomId,
+    fromPlayer: myPlayerName,
+    toPlayer: scoreTarget,
+    amount: amount
+  }, (res) => {
+    if (res.ok) {
+      scores = res.scores;
+      renderScoreboard();
+      closeScoreModal();
+      showToast(`💰 给 ${scoreTarget} +${amount} 分`);
+    } else {
+      showToast(res.error || '记分失败', true);
+    }
+  });
+}
+
+function resetScores() {
+  if (!currentRoomId || !myPlayerName) return;
+  if (!confirm('确定要重置所有分数吗？')) return;
+
+  socket.emit('reset_scores', { roomId: currentRoomId }, (res) => {
+    if (res.ok) {
+      scores = {};
+      renderScoreboard();
+      showToast('🔄 分数已重置');
+    }
+  });
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
@@ -773,7 +1021,7 @@ function renderHistory() {
   }
 
   empty.style.display = 'none';
-  list.innerHTML = history.slice().reverse().map((h, idx) => {
+  list.innerHTML = history.slice().reverse().map((h) => {
     const playerCount = Object.values(h.seats).filter(s => s.name).length;
     const chips = Object.entries(h.seats).map(([dir, s]) => {
       const dirLabel = { east: '东', south: '南', west: '西', north: '北' }[dir];
@@ -793,16 +1041,8 @@ function renderHistory() {
 
 function updateDrawBtn() {
   const btn = document.getElementById('drawBtn');
-  // Only allow draw if I'm in the queue and we have at least 2 people
   const canDraw = myPlayerId && queue.length >= 2 && !isRolling;
   btn.disabled = !canDraw;
-  if (queue.length < 2) {
-    btn.title = '至少需要2人才能抽签';
-  } else if (!myPlayerId) {
-    btn.title = '报名后才能抽签';
-  } else {
-    btn.title = '';
-  }
 }
 
 function updateRoundBadge() {
@@ -912,11 +1152,14 @@ function launchConfetti() {
 }
 
 // ─── UTILS ────────────────────────────────────────────────────────────────────
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function escHtml(s) {
   if (!s) return '';
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
+// Listen for score input changes
+document.getElementById('scoreAmount')?.addEventListener('input', updateScorePreview);
+
 window.addEventListener('resize', () => {
   const c = document.getElementById('confettiCanvas');
   if (c) { c.width = window.innerWidth; c.height = window.innerHeight; }
