@@ -1,0 +1,15 @@
+{
+  "name": "mahjong-realtime",
+  "version": "1.0.0",
+  "description": "🀄 麻将局报名抽签台 - 实时多人版",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.0"
+  }
+}
