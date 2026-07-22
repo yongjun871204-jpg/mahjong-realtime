@@ -99,13 +99,21 @@ io.on('connection', (socket) => {
     }
     const room = rooms[roomId];
     if (!room) return callback({ ok: false, error: '房间不存在或已过期，请重新创建' });
-    if (room.queue.some(p => p.name === escHtml(playerName.trim()))) {
-      return callback({ ok: false, error: '这个名字已经被占了，换一个吧~' });
+
+    const cleanName = escHtml(playerName.trim());
+    const existingPlayer = room.queue.find(p => p.name === cleanName);
+
+    if (existingPlayer) {
+      // Name exists - check if it's a reconnect (same socket or allow rejoin)
+      // For simplicity, we'll remove the old entry and let them rejoin
+      room.queue = room.queue.filter(p => p.name !== cleanName);
+      console.log(`🔄 ${cleanName} rejoined room ${roomId}`);
     }
+
     if (room.queue.length >= MAX_QUEUE) {
       return callback({ ok: false, error: `房间已满（最多${MAX_QUEUE}人）` });
     }
-    room.queue.push({ id: uuidv4(), name: escHtml(playerName.trim()), ts: Date.now() });
+    room.queue.push({ id: uuidv4(), name: cleanName, ts: Date.now() });
     room._sockets.add(socket.id);
     socket.join(roomId);
     socket._roomId = roomId;

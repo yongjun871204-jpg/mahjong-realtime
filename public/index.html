@@ -472,9 +472,10 @@ function autoJoinRoom(roomId, playerName) {
   if (!socket) connectSocket();
   socket.emit('join_room', { roomId, playerName }, (res) => {
     if (!res.ok) {
-      // Auto-join failed, show join form
+      // Auto-join failed, clear saved data and show join form
+      clearLS();
       showLandingWithJoin(roomId);
-      showToast(res.error, true);
+      showToast(res.error + ' 请重新输入名字', true);
       return;
     }
     // Success
@@ -543,6 +544,19 @@ function rejoinLastRoom() {
   if (roomId && playerName) {
     window.location.hash = roomId;
     autoJoinRoom(roomId, playerName);
+  }
+}
+
+// ─── FORCE ENTER AS NEW PLAYER ────────────────────────────────────────────────
+function forceEnterWithNewName() {
+  // Clear only the name, keep the room ID
+  try { localStorage.removeItem(LS_KEY_NAME); } catch(e) {}
+  const roomId = getRoomIdFromUrl() || loadFromLS(LS_KEY_ROOM);
+  if (roomId) {
+    showLandingWithJoin(roomId);
+    showToast('请用新名字加入房间');
+  } else {
+    showLanding();
   }
 }
 
