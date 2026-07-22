@@ -98,105 +98,98 @@
     .queue-player {
       display: flex; align-items: center; gap: 8px;
       background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
-      border-radius: 25px; padding: 6px 12px 6px 8px;
-      animation: slide-in .3s cubic-bezier(.34,1.56,.64,1);
-      transition: opacity .3s;
+      border-radius: 24px; padding: 6px 14px; font-size: .88rem;
+      transition: all .2s;
     }
-    @keyframes slide-in { from { transform: translateY(-8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .queue-player .avatar {
-      width: 26px; height: 26px; border-radius: 50%;
-      background: linear-gradient(135deg,var(--green-light),var(--green));
-      display: flex; align-items: center; justify-content: center;
-      font-size: .7rem; font-weight: bold; color: var(--cream); flex-shrink: 0;
-    }
-    .queue-player .name { font-size: .88rem; }
+    .queue-player:hover { background: rgba(255,255,255,.12); }
+    .queue-player .avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg,var(--gold-dark),var(--gold)); color: var(--dark); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: .75rem; }
     .queue-player .remove-btn {
-      background: none; border: none; color: rgba(255,255,255,.35); cursor: pointer;
-      font-size: .95rem; line-height: 1; padding: 2px; transition: color .2s;
+      width: 18px; height: 18px; border-radius: 50%; border: none;
+      background: rgba(244,67,54,.8); color: #fff; font-size: .7rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .2s;
     }
-    .queue-player .remove-btn:hover { color: var(--red); }
-    .player-count { font-size: .8rem; color: rgba(245,240,225,.5); text-align: center; margin-top: 8px; }
-    .player-count span { color: var(--gold); font-weight: bold; }
+    .queue-player:hover .remove-btn { opacity: 1; }
+    .queue-player .remove-btn:hover { background: #f44336; }
+    .queue-player.me { border-color: var(--gold); background: rgba(255,213,79,.1); }
+    .queue-player.me .avatar { background: linear-gradient(135deg,#4caf50,#8bc34a); color: #fff; }
+    .player-count { text-align: center; font-size: .8rem; color: rgba(245,240,225,.5); margin-top: 10px; }
 
-    /* ── FORM ── */
+    /* ── SIGNUP FORM ── */
     .signup-form { display: flex; gap: 10px; margin-top: 14px; }
     .signup-form input {
-      flex: 1; padding: 11px 18px; border-radius: 25px;
-      border: 2px solid rgba(255,213,79,.28); background: rgba(255,255,255,.07);
-      color: var(--cream); font-size: .95rem; font-family: inherit; outline: none;
-      transition: border-color .2s,background .2s;
+      flex: 1; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px; padding: 12px 16px; color: var(--cream); font-size: 1rem; outline: none; transition: all .2s;
     }
-    .signup-form input::placeholder { color: rgba(245,240,225,.38); }
-    .signup-form input:focus { border-color: var(--gold); background: rgba(255,255,255,.1); }
+    .signup-form input:focus { border-color: var(--gold); background: rgba(255,255,255,.12); }
+    .signup-form input::placeholder { color: rgba(245,240,225,.35); }
 
     /* ── BUTTONS ── */
     .btn {
-      padding: 11px 22px; border-radius: 25px; border: none; font-size: .95rem;
-      font-family: inherit; font-weight: bold; cursor: pointer; transition: all .2s;
-      letter-spacing: .08em; white-space: nowrap;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: none; border-radius: 12px; padding: 12px 24px; font-size: 1rem;
+      font-weight: bold; cursor: pointer; transition: all .2s; white-space: nowrap;
     }
-    .btn-primary { background: linear-gradient(135deg,var(--gold-dark),var(--gold)); color: var(--dark); box-shadow: 0 4px 14px rgba(255,179,0,.3); }
-    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(255,179,0,.5); }
-    .btn-primary:active:not(:disabled) { transform: translateY(0); }
-    .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-    .btn-danger { background: linear-gradient(135deg,#c62828,#e53935); color: #fff; box-shadow: 0 4px 12px rgba(198,40,40,.3); }
-    .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(198,40,40,.5); }
-    .btn-secondary { background: rgba(255,255,255,.08); color: var(--cream); border: 1px solid rgba(255,255,255,.18); }
-    .btn-secondary:hover { background: rgba(255,255,255,.18); }
-    .btn-ghost { background: none; border: none; color: rgba(245,240,225,.5); cursor: pointer; font-size: .85rem; padding: 6px 12px; border-radius: 20px; transition: all .2s; }
-    .btn-ghost:hover { background: rgba(255,255,255,.08); color: var(--cream); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(135deg,var(--gold-dark),var(--gold)); color: var(--dark); box-shadow: 0 4px 14px rgba(255,179,0,.35); }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,179,0,.5); }
+    .btn-secondary { background: rgba(255,255,255,.1); color: var(--cream); border: 1px solid rgba(255,255,255,.2); }
+    .btn-secondary:hover:not(:disabled) { background: rgba(255,255,255,.15); }
+    .btn-ghost { background: transparent; color: rgba(245,240,225,.6); border: 1px solid rgba(255,255,255,.15); }
+    .btn-ghost:hover { color: var(--cream); border-color: rgba(255,255,255,.3); }
+    .btn-danger { background: rgba(244,67,54,.2); color: #ef9a9a; border: 1px solid rgba(244,67,54,.4); }
+    .btn-danger:hover { background: rgba(244,67,54,.3); }
 
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
-    .actions .btn { flex: 1; min-width: 140px; }
+    /* ── ACTIONS ── */
+    .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
 
     /* ── HISTORY ── */
-    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .history-list { display: flex; flex-direction: column; gap: 10px; }
+    .no-history { text-align: center; color: rgba(245,240,225,.3); font-size: .88rem; padding: 16px 0; }
     .history-item {
-      background: rgba(255,255,255,.04); border-radius: 10px; padding: 12px 16px;
-      display: flex; justify-content: space-between; align-items: center; transition: background .2s;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px; padding: 12px 16px;
     }
-    .history-item:hover { background: rgba(255,255,255,.08); }
-    .history-item .game-info { display: flex; flex-direction: column; gap: 2px; }
-    .history-item .game-name { font-size: .92rem; color: var(--cream); font-weight: bold; }
-    .history-item .game-time { font-size: .75rem; color: rgba(245,240,225,.35); }
-    .seats-preview { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
-    .seat-chip { padding: 2px 8px; border-radius: 12px; font-size: .7rem; font-weight: bold; }
-    .seat-chip.e { background: rgba(255,213,79,.25); color: var(--gold); }
-    .seat-chip.s { background: rgba(244,67,54,.25); color: #ef9a9a; }
-    .seat-chip.w { background: rgba(33,150,243,.25); color: #90caf9; }
-    .seat-chip.n { background: rgba(76,175,80,.25); color: #a5d6a7; }
-    .no-history { color: rgba(245,240,225,.28); font-size: .88rem; text-align: center; padding: 12px 0; }
+    .history-info { display: flex; flex-direction: column; gap: 4px; }
+    .history-round { font-size: .75rem; color: var(--gold); }
+    .game-time { font-size: .7rem; color: rgba(245,240,225,.4); }
+    .seats-preview { display: flex; gap: 6px; }
+    .seat-chip {
+      display: flex; align-items: center; gap: 4px;
+      background: rgba(255,213,79,.12); border: 1px solid rgba(255,213,79,.25);
+      border-radius: 16px; padding: 4px 10px; font-size: .75rem;
+    }
+    .seat-chip .dir { opacity: .6; font-size: .65rem; }
 
     /* ── LANDING ── */
     #landing { display: none; }
     #landing.active { display: block; }
-    .landing-wrap { max-width: 480px; margin: 0 auto; }
-    .landing-logo { font-size: 4rem; text-align: center; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+    .landing-wrap { max-width: 420px; margin: 0 auto; padding: 20px 0; }
+    .landing-logo { text-align: center; font-size: 4rem; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    .landing-desc { text-align: center; color: rgba(245,240,225,.6); font-size: .92rem; line-height: 1.8; margin-bottom: 28px; }
-    .landing-tabs { display: flex; background: rgba(0,0,0,.25); border-radius: 14px; padding: 4px; margin-bottom: 20px; }
-    .landing-tab { flex: 1; padding: 10px; text-align: center; border-radius: 11px; font-size: .92rem; font-weight: bold; color: rgba(245,240,225,.5); cursor: pointer; transition: all .2s; }
-    .landing-tab.active { background: linear-gradient(135deg,var(--gold-dark),var(--gold)); color: var(--dark); }
+    .landing-desc { text-align: center; color: rgba(245,240,225,.6); font-size: .95rem; line-height: 1.7; margin-bottom: 24px; }
+    .landing-tabs { display: flex; background: rgba(0,0,0,.3); border-radius: 14px; padding: 4px; margin-bottom: 20px; }
+    .landing-tab { flex: 1; text-align: center; padding: 12px; border-radius: 10px; cursor: pointer; font-size: .9rem; color: rgba(245,240,225,.5); transition: all .2s; }
+    .landing-tab.active { background: linear-gradient(135deg,var(--gold-dark),var(--gold)); color: var(--dark); font-weight: bold; }
     .landing-panel { display: none; }
     .landing-panel.active { display: block; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: .82rem; color: rgba(245,240,225,.5); margin-bottom: 6px; letter-spacing: .1em; }
-    .form-group input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid rgba(255,213,79,.28); background: rgba(255,255,255,.07); color: var(--cream); font-size: .95rem; font-family: inherit; outline: none; transition: border-color .2s; }
-    .form-group input::placeholder { color: rgba(245,240,225,.35); }
-    .form-group input:focus { border-color: var(--gold); }
-    .landing-panel .btn { width: 100%; font-size: 1rem; padding: 14px; border-radius: 14px; }
-    .join-room-hint { text-align: center; margin-top: 12px; font-size: .8rem; color: rgba(245,240,225,.35); }
-    .landing-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; }
-    .feature-item { background: rgba(255,255,255,.05); border-radius: 12px; padding: 14px; text-align: center; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: .85rem; color: rgba(245,240,225,.6); margin-bottom: 6px; }
+    .form-group input {
+      width: 100%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px; padding: 14px 16px; color: var(--cream); font-size: 1rem; outline: none;
+    }
+    .form-group input:focus { border-color: var(--gold); background: rgba(255,255,255,.12); }
+    .form-group input::placeholder { color: rgba(245,240,225,.3); }
+    .join-room-hint { text-align: center; font-size: .8rem; color: rgba(245,240,225,.4); margin-top: 12px; }
+    .landing-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+    .feature-item { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 16px; text-align: center; }
     .feature-item .feat-emoji { font-size: 1.6rem; display: block; margin-bottom: 6px; }
-    .feature-item .feat-text { font-size: .82rem; color: rgba(245,240,225,.6); }
+    .feature-item .feat-text { font-size: .8rem; color: rgba(245,240,225,.6); line-height: 1.5; }
 
-    /* ── LIVE INDICATOR ── */
-    .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4caf50; margin-right: 6px; animation: pulse-dot 2s ease-in-out infinite; }
-    @keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.85); } }
-
-    /* ── OVERLAY RESULT ── */
-    .roll-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 50; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; backdrop-filter: blur(4px); }
+    /* ── ROLL OVERLAY ── */
+    .roll-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 50; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; backdrop-filter: blur(8px); }
     .roll-overlay.visible { opacity: 1; pointer-events: auto; }
     .roll-result-card { background: linear-gradient(135deg,#1a4a2e,#0d3b12); border: 3px solid var(--gold); border-radius: 22px; padding: 36px; text-align: center; max-width: 480px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.6),0 0 80px rgba(255,213,79,.12); animation: card-pop .5s cubic-bezier(.34,1.56,.64,1); }
     @keyframes card-pop { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -238,6 +231,15 @@
     /* ── ROUND BADGE ── */
     .round-info { text-align: center; margin-bottom: 14px; }
     .round-badge { display: inline-block; background: linear-gradient(135deg,var(--gold-dark),var(--gold)); color: var(--dark); padding: 3px 18px; border-radius: 20px; font-size: .82rem; font-weight: bold; letter-spacing: .1em; box-shadow: 0 2px 10px rgba(255,179,0,.35); }
+
+    /* ── VIEWER MODE ── */
+    .viewer-notice { text-align: center; background: rgba(255,213,79,.08); border: 1px dashed rgba(255,213,79,.3); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .viewer-notice p { color: rgba(245,240,225,.7); font-size: .9rem; margin-bottom: 12px; }
+
+    /* ── MY STATUS ── */
+    .my-status { display: flex; align-items: center; justify-content: space-between; background: rgba(76,175,80,.1); border: 1px solid rgba(76,175,80,.3); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; }
+    .my-status .status-text { display: flex; align-items: center; gap: 8px; color: #a5d6a7; font-size: .9rem; }
+    .my-status .status-text .dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; animation: pulse-dot 2s infinite; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 500px) {
@@ -345,6 +347,24 @@
       </div>
     </div>
 
+    <!-- My Status (only when joined) -->
+    <div class="my-status" id="myStatus" style="display:none">
+      <div class="status-text">
+        <span class="dot"></span>
+        <span>你已报名：<strong id="myNameDisplay"></strong></span>
+      </div>
+      <button class="btn btn-danger" onclick="leaveQueue()">退出报名</button>
+    </div>
+
+    <!-- Viewer Notice (only when not joined) -->
+    <div class="viewer-notice" id="viewerNotice">
+      <p>👀 你正在围观这个房间，报名后才能参与抽签</p>
+      <form class="signup-form" onsubmit="handleSignup(event)">
+        <input type="text" id="nameInput" placeholder="输入名字报名" maxlength="12" autocomplete="off" />
+        <button type="submit" class="btn btn-primary" id="signupBtn">立即报名</button>
+      </form>
+    </div>
+
     <!-- Table -->
     <div class="round-info">
       <span class="round-badge" id="roundBadge">第 1 局</span>
@@ -369,17 +389,13 @@
         <div class="queue-empty" id="queueEmpty">暂无报名，来凑一桌？</div>
       </div>
       <p class="player-count"><span id="queueCount">0</span> 人已报名（至少需要 4 人）</p>
-      <form class="signup-form" onsubmit="handleSignup(event)">
-        <input type="text" id="nameInput" placeholder="输入名字报名" maxlength="12" autocomplete="off" />
-        <button type="submit" class="btn btn-primary" id="signupBtn">报名</button>
-      </form>
     </div>
 
     <!-- Actions -->
     <div class="actions">
       <button class="btn btn-primary" id="drawBtn" onclick="drawSeats()" disabled>🎲 抽签入座</button>
       <button class="btn btn-secondary" onclick="resetGame()">🔄 重新开局</button>
-      <button class="btn btn-ghost" onclick="logout()">🚪 退出房间</button>
+      <button class="btn btn-ghost" onclick="goHome()">🏠 返回首页</button>
     </div>
 
     <!-- History -->
@@ -405,20 +421,10 @@ let seats = {};
 let history = [];
 let isRolling = false;
 
-// ─── LOCAL STORAGE KEYS ───────────────────────────────────────────────────────
+// ─── LOCAL STORAGE ────────────────────────────────────────────────────────────
 const LS_KEY_NAME = 'mahjong_name';
-const LS_KEY_ROOM = 'mahjong_room';
-
-// ─── LOCAL STORAGE HELPERS ────────────────────────────────────────────────────
-function saveToLS(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
-}
-function loadFromLS(key, defaultVal = null) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : defaultVal; } catch(e) { return defaultVal; }
-}
-function clearLS() {
-  try { localStorage.removeItem(LS_KEY_NAME); localStorage.removeItem(LS_KEY_ROOM); } catch(e) {}
-}
+function saveName(name) { try { localStorage.setItem(LS_KEY_NAME, JSON.stringify(name)); } catch(e) {} }
+function loadName() { try { const v = localStorage.getItem(LS_KEY_NAME); return v ? JSON.parse(v) : null; } catch(e) { return null; } }
 
 // ─── ROUTING ─────────────────────────────────────────────────────────────────
 function getRoomIdFromUrl() {
@@ -430,64 +436,44 @@ function getRoomIdFromUrl() {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
   const roomId = getRoomIdFromUrl();
-  const savedName = loadFromLS(LS_KEY_NAME);
-  const savedRoom = loadFromLS(LS_KEY_ROOM);
+  const savedName = loadName();
 
-  // Case 1: URL has roomId → try to auto-join with saved name
   if (roomId) {
-    if (savedName) {
-      // Auto-join with saved name
-      autoJoinRoom(roomId, savedName);
-    } else {
-      showLandingWithJoin(roomId);
-    }
-    return;
+    // Has room ID - enter as viewer first
+    enterRoomAsViewer(roomId, savedName);
+  } else {
+    // No room - show landing
+    showLanding();
   }
-
-  // Case 2: No URL roomId, but has saved room+name → ask to rejoin
-  if (savedRoom && savedName) {
-    showRejoinPrompt(savedRoom, savedName);
-    return;
-  }
-
-  // Case 3: Fresh start
-  showLanding();
 }
 
-function showLandingWithJoin(roomId) {
-  document.getElementById('landing').classList.add('active');
-  document.getElementById('game').style.display = 'none';
-  switchTab('join');
-  document.getElementById('joinRoomId').value = roomId;
-  // Pre-fill saved name if exists
-  const savedName = loadFromLS(LS_KEY_NAME);
-  if (savedName) {
-    document.getElementById('joinName').value = savedName;
-  }
-  document.getElementById('joinName').focus();
-}
-
-// ─── AUTO JOIN ────────────────────────────────────────────────────────────────
-function autoJoinRoom(roomId, playerName) {
+// ─── ENTER ROOM AS VIEWER ─────────────────────────────────────────────────────
+function enterRoomAsViewer(roomId, savedName) {
   if (!socket) connectSocket();
-  socket.emit('join_room', { roomId, playerName }, (res) => {
+
+  socket.emit('view_room', { roomId }, (res) => {
     if (!res.ok) {
-      // Auto-join failed, clear saved data and show join form
-      clearLS();
-      showLandingWithJoin(roomId);
-      showToast(res.error + ' 请重新输入名字', true);
+      showToast(res.error || '房间不存在', true);
+      showLanding();
       return;
     }
-    // Success
-    myPlayerName = playerName;
-    myPlayerId = res.room.queue.find(p => p.name === playerName)?.id;
+
+    // Update state from room data
     currentRoomId = res.room.id;
     currentRound = res.room.round || 1;
     queue = res.room.queue || [];
     seats = res.room.seats || {};
     history = res.room.history || [];
-    saveToLS(LS_KEY_NAME, playerName);
-    saveToLS(LS_KEY_ROOM, currentRoomId);
+
+    // Check if I'm already in queue (by saved name)
+    if (savedName) {
+      const me = queue.find(p => p.name === savedName);
+      if (me) {
+        myPlayerName = savedName;
+        myPlayerId = me.id;
+      }
+    }
+
     window.location.hash = currentRoomId;
     showGame();
     renderShareUrl();
@@ -496,204 +482,171 @@ function autoJoinRoom(roomId, playerName) {
     renderHistory();
     updateRoundBadge();
     updateDrawBtn();
-    showToast(`👋 欢迎回来，${playerName}！`);
+    updateMyStatus();
   });
-}
-
-// ─── REJOIN PROMPT ────────────────────────────────────────────────────────────
-function showRejoinPrompt(roomId, playerName) {
-  document.getElementById('landing').classList.add('active');
-  document.getElementById('game').style.display = 'none';
-
-  // Create rejoin UI
-  const landingWrap = document.querySelector('.landing-wrap');
-  const existing = document.getElementById('rejoinPanel');
-  if (existing) existing.remove();
-
-  const panel = document.createElement('div');
-  panel.id = 'rejoinPanel';
-  panel.innerHTML = `
-    <div class="landing-logo">🀄</div>
-    <p style="text-align:center;color:rgba(245,240,225,.7);margin-bottom:20px;">
-      检测到之前的房间<br>
-      <strong style="color:var(--gold)">${roomId}</strong>
-    </p>
-    <div style="display:flex;gap:10px;flex-direction:column;">
-      <button class="btn btn-primary" onclick="rejoinLastRoom()">
-        🔄 重新进入房间（${playerName}）
-      </button>
-      <button class="btn btn-secondary" onclick="startFresh()">
-        🆕 创建新房间
-      </button>
-    </div>
-  `;
-
-  // Hide original content
-  document.querySelector('.landing-desc').style.display = 'none';
-  document.querySelector('.landing-tabs').style.display = 'none';
-  document.getElementById('panelCreate').style.display = 'none';
-  document.getElementById('panelJoin').style.display = 'none';
-  document.querySelector('.landing-features').style.display = 'none';
-
-  landingWrap.insertBefore(panel, landingWrap.children[2]);
-}
-
-function rejoinLastRoom() {
-  const roomId = loadFromLS(LS_KEY_ROOM);
-  const playerName = loadFromLS(LS_KEY_NAME);
-  if (roomId && playerName) {
-    window.location.hash = roomId;
-    autoJoinRoom(roomId, playerName);
-  }
-}
-
-// ─── FORCE ENTER AS NEW PLAYER ────────────────────────────────────────────────
-function forceEnterWithNewName() {
-  // Clear only the name, keep the room ID
-  try { localStorage.removeItem(LS_KEY_NAME); } catch(e) {}
-  const roomId = getRoomIdFromUrl() || loadFromLS(LS_KEY_ROOM);
-  if (roomId) {
-    showLandingWithJoin(roomId);
-    showToast('请用新名字加入房间');
-  } else {
-    showLanding();
-  }
-}
-
-function startFresh() {
-  clearLS();
-  location.reload();
-}
-
-function showLanding() {
-  document.getElementById('landing').classList.add('active');
-  document.getElementById('game').style.display = 'none';
-  window.location.hash = '';
-}
-
-function showGame() {
-  document.getElementById('landing').classList.remove('active');
-  document.getElementById('landing').style.display = 'none';
-  document.getElementById('game').style.display = 'block';
 }
 
 // ─── SOCKET ───────────────────────────────────────────────────────────────────
 function connectSocket() {
-  socket = io({ transports: ['websocket','polling'] });
+  if (socket) return;
+  socket = io({ transports: ['websocket', 'polling'] });
 
   socket.on('connect', () => {
-    updateConnStatus('connected', '已连接');
+    updateConnStatus('connected');
+    // Re-join room if we have one
+    if (currentRoomId && myPlayerName) {
+      socket.emit('join_room', { roomId: currentRoomId, playerName: myPlayerName });
+    } else if (currentRoomId) {
+      socket.emit('view_room', { roomId: currentRoomId });
+    }
   });
-  socket.on('disconnect', () => { updateConnStatus('disconnected', '连接断开'); });
-  socket.on('connect_error', () => { updateConnStatus('disconnected', '连接失败'); });
 
-  socket.on('queue_updated', (q) => {
-    queue = q;
+  socket.on('disconnect', () => updateConnStatus('disconnected'));
+  socket.on('connecting', () => updateConnStatus('connecting'));
+
+  socket.on('room_update', (data) => {
+    queue = data.queue || [];
+    seats = data.seats || {};
+    // Update my player ID if name matches
+    if (myPlayerName) {
+      const me = queue.find(p => p.name === myPlayerName);
+      if (me) myPlayerId = me.id;
+      else myPlayerId = null;
+    }
     renderQueue();
+    renderSeats();
     updateDrawBtn();
+    updateMyStatus();
   });
 
-  socket.on('draw_result', ({ round, seats: s, history: h }) => {
-    currentRound = round;
-    seats = s;
-    history = h;
-    closeRollOverlay();
+  socket.on('roll_result', (data) => {
+    seats = data.seats;
+    history = data.history;
+    isRolling = false;
+    stopRollingAnim();
     renderSeats();
     renderHistory();
-    updateRoundBadge();
+    showRollOverlay(seats);
     launchConfetti();
-    if (!isRolling) showToast(`🎉 第 ${round} 局抽签完成！`);
   });
 
-  socket.on('seat_rerolled', ({ dir, dice }) => {
-    if (seats[dir]) seats[dir].dice = dice;
-    const el = document.getElementById('seat-' + dir);
-    el.classList.remove('rolling');
-    document.getElementById('dice-' + dir).textContent = dice.face;
-  });
-
-  socket.on('room_reset', (room) => {
-    queue = room.queue || [];
-    seats = {};
-    currentRound = room.round || 1;
-    history = room.history || [];
+  socket.on('game_reset', (data) => {
+    currentRound = data.round;
+    queue = data.queue;
+    seats = data.seats;
     renderQueue();
     renderSeats();
-    renderHistory();
     updateRoundBadge();
     updateDrawBtn();
-    showToast('已重新开局！');
+    showToast(`🔄 第 ${currentRound} 局开始！`);
   });
 
-  socket.on('room_updated', (room) => {
-    currentRound = room.round;
-    updateRoundBadge();
+  socket.on('player_left', (data) => {
+    if (data.name === myPlayerName) {
+      // I was removed
+      myPlayerId = null;
+      myPlayerName = null;
+      updateMyStatus();
+      showToast('你已退出报名');
+    }
+    queue = data.queue;
+    renderQueue();
+    updateDrawBtn();
   });
 }
 
-function updateConnStatus(state, text) {
+function updateConnStatus(status) {
   const dot = document.getElementById('connDot');
-  const txt = document.getElementById('connText');
-  dot.className = 'conn-dot ' + state;
-  txt.textContent = text;
+  const text = document.getElementById('connText');
+  dot.className = 'conn-dot ' + status;
+  text.textContent = status === 'connected' ? '已连接' : status === 'connecting' ? '连接中...' : '未连接';
 }
 
-// ─── LANDING ─────────────────────────────────────────────────────────────────
+// ─── UI NAVIGATION ────────────────────────────────────────────────────────────
+function showLanding() {
+  document.getElementById('landing').classList.add('active');
+  document.getElementById('game').style.display = 'none';
+  window.location.hash = '';
+  currentRoomId = null;
+  myPlayerId = null;
+  myPlayerName = null;
+
+  // Pre-fill saved name
+  const savedName = loadName();
+  if (savedName) {
+    document.getElementById('createName').value = savedName;
+    document.getElementById('joinName').value = savedName;
+  }
+}
+
+function showGame() {
+  document.getElementById('landing').classList.remove('active');
+  document.getElementById('game').style.display = 'block';
+  document.getElementById('roomIdDisplay').textContent = currentRoomId;
+}
+
 function switchTab(tab) {
   document.getElementById('tabCreate').classList.toggle('active', tab === 'create');
   document.getElementById('tabJoin').classList.toggle('active', tab === 'join');
   document.getElementById('panelCreate').classList.toggle('active', tab === 'create');
   document.getElementById('panelJoin').classList.toggle('active', tab === 'join');
-  if (tab === 'create') document.getElementById('createName').focus();
-  else document.getElementById('joinName').focus();
 }
 
-async function handleCreate() {
+function goHome() {
+  showLanding();
+}
+
+// ─── CREATE ROOM ──────────────────────────────────────────────────────────────
+function handleCreate() {
   const name = document.getElementById('createName').value.trim();
-  if (!name) { showToast('请输入你的名字', true); return; }
+  if (!name) return showToast('请输入你的名字', true);
+
   if (!socket) connectSocket();
   socket.emit('create_room', { playerName: name }, (res) => {
-    if (!res.ok) { showToast(res.error, true); return; }
+    if (!res.ok) return showToast(res.error, true);
+
     myPlayerName = name;
-    myPlayerId = res.room.queue[0]?.id;
-    currentRoomId = res.room.id;
-    currentRound = res.room.round || 1;
-    queue = res.room.queue || [];
-    seats = res.room.seats || {};
-    history = res.room.history || [];
-    // Save to localStorage for auto-rejoin
-    saveToLS(LS_KEY_NAME, name);
-    saveToLS(LS_KEY_ROOM, currentRoomId);
+    myPlayerId = res.room.queue[0].id;
+    currentRoomId = res.roomId;
+    currentRound = 1;
+    queue = res.room.queue;
+    seats = {};
+    history = [];
+
+    saveName(name);
     window.location.hash = currentRoomId;
     showGame();
     renderShareUrl();
     renderQueue();
     renderSeats();
-    renderHistory();
     updateRoundBadge();
     updateDrawBtn();
-    showToast(`🏠 房间 ${currentRoomId} 创建成功！`);
+    updateMyStatus();
+    showToast('🎉 房间创建成功！快分享给群友吧');
   });
 }
 
-async function handleJoin() {
+// ─── JOIN ROOM ────────────────────────────────────────────────────────────────
+function handleJoin() {
   const roomId = document.getElementById('joinRoomId').value.trim();
   const name = document.getElementById('joinName').value.trim();
-  if (!roomId) { showToast('请输入房间号', true); return; }
-  if (!name) { showToast('请输入你的名字', true); return; }
+
+  if (!roomId) return showToast('请输入房间号', true);
+  if (!name) return showToast('请输入你的名字', true);
+
   if (!socket) connectSocket();
   socket.emit('join_room', { roomId, playerName: name }, (res) => {
-    if (!res.ok) { showToast(res.error, true); return; }
+    if (!res.ok) return showToast(res.error, true);
+
     myPlayerName = name;
     myPlayerId = res.room.queue.find(p => p.name === name)?.id;
     currentRoomId = res.room.id;
     currentRound = res.room.round || 1;
-    queue = res.room.queue || [];
+    queue = res.room.queue;
     seats = res.room.seats || {};
     history = res.room.history || [];
-    // Save to localStorage for auto-rejoin
-    saveToLS(LS_KEY_NAME, name);
-    saveToLS(LS_KEY_ROOM, currentRoomId);
+
+    saveName(name);
     window.location.hash = currentRoomId;
     showGame();
     renderShareUrl();
@@ -702,154 +655,134 @@ async function handleJoin() {
     renderHistory();
     updateRoundBadge();
     updateDrawBtn();
-    showToast(`✅ 加入成功！`);
+    updateMyStatus();
+    showToast(`🎉 加入成功！当前 ${queue.length} 人报名`);
   });
 }
 
-// ─── SIGNUP ───────────────────────────────────────────────────────────────────
+// ─── SIGNUP (FROM VIEWER MODE) ────────────────────────────────────────────────
 function handleSignup(e) {
   e.preventDefault();
-  const input = document.getElementById('nameInput');
-  const name = input.value.trim();
-  if (!name) { showToast('请输入名字', true); return; }
-  if (!socket || !socket.connected) { showToast('连接未建立，请刷新重试', true); return; }
-  socket.emit('signup', { playerName: name }, (res) => {
-    if (!res.ok) { showToast(res.error, true); return; }
-    input.value = '';
-    showToast(`✅ ${name} 报名成功！`);
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) return showToast('请输入名字', true);
+  if (!currentRoomId) return;
+
+  socket.emit('join_room', { roomId: currentRoomId, playerName: name }, (res) => {
+    if (!res.ok) return showToast(res.error, true);
+
+    myPlayerName = name;
+    myPlayerId = res.room.queue.find(p => p.name === name)?.id;
+    queue = res.room.queue;
+
+    saveName(name);
+    renderQueue();
+    updateDrawBtn();
+    updateMyStatus();
+    document.getElementById('nameInput').value = '';
+    showToast(`🎉 报名成功！当前 ${queue.length} 人`);
   });
 }
 
-function cancelSignup(playerId) {
-  if (!socket || !socket.connected) return;
-  socket.emit('cancel_signup', { playerId }, () => {});
-}
+// ─── LEAVE QUEUE ──────────────────────────────────────────────────────────────
+function leaveQueue() {
+  if (!myPlayerId || !currentRoomId) return;
 
-// ─── DRAW ─────────────────────────────────────────────────────────────────────
-async function drawSeats() {
-  if (isRolling) return;
-  if (queue.length < 4) { showToast('至少需要4人才能开打！', true); return; }
-  isRolling = true;
-
-  document.getElementById('diceRollingText').classList.add('visible');
-  document.querySelectorAll('.seat').forEach(s => s.classList.add('rolling'));
-
-  const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-  const SEAT_ORDER = ['east','south','west','north'];
-  const rolls = 18;
-  for (let i = 0; i < rolls; i++) {
-    SEAT_ORDER.forEach(dir => {
-      document.getElementById('dice-' + dir).textContent = DICE_FACES[Math.floor(Math.random()*6)];
-    });
-    await sleep(65 + i * 8);
-  }
-
-  socket.emit('draw_seats', (res) => {
-    isRolling = false;
-    document.getElementById('diceRollingText').classList.remove('visible');
-    document.querySelectorAll('.seat').forEach(s => s.classList.remove('rolling'));
-    if (!res.ok) { showToast(res.error, true); }
-    else {
-      showRollOverlay(res.seats);
+  socket.emit('leave_room', { roomId: currentRoomId, playerId: myPlayerId }, (res) => {
+    if (res.ok) {
+      myPlayerId = null;
+      myPlayerName = null;
+      updateMyStatus();
+      showToast('已退出报名');
     }
   });
 }
 
-function rerollSeat(dir) {
-  const el = document.getElementById('seat-' + dir);
-  if (!el.classList.contains('filled')) return;
-  if (isRolling) return;
-  el.classList.add('rolling');
-  let count = 0;
-  const interval = setInterval(() => {
-    const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-    document.getElementById('dice-' + dir).textContent = DICE_FACES[Math.floor(Math.random()*6)];
-    count++;
-    if (count >= 12) {
-      clearInterval(interval);
-      socket.emit('reroll_seat', { dir }, () => {});
-    }
-  }, 80);
-}
+// ─── UPDATE MY STATUS UI ──────────────────────────────────────────────────────
+function updateMyStatus() {
+  const myStatus = document.getElementById('myStatus');
+  const viewerNotice = document.getElementById('viewerNotice');
 
-// ─── RESET ────────────────────────────────────────────────────────────────────
-function resetGame() {
-  if (queue.length === 0 && Object.keys(seats).length === 0) return;
-  if (!confirm('确定要重新开局？报名队列和座位都将清空。')) return;
-  socket.emit('reset_game', () => {});
-}
-
-// ─── LOGOUT / CLEAR DATA ──────────────────────────────────────────────────────
-function logout() {
-  if (!confirm('确定要退出当前房间？你的报名将被取消。')) return;
-  clearLS();
-  if (socket) {
-    socket.disconnect();
-    socket = null;
+  if (myPlayerId && myPlayerName) {
+    myStatus.style.display = 'flex';
+    viewerNotice.style.display = 'none';
+    document.getElementById('myNameDisplay').textContent = myPlayerName;
+  } else {
+    myStatus.style.display = 'none';
+    viewerNotice.style.display = 'block';
   }
-  window.location.hash = '';
-  location.reload();
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
 function renderShareUrl() {
-  const url = `${window.location.origin}${window.location.pathname}#${currentRoomId}`;
+  const url = `${window.location.origin}/#${currentRoomId}`;
   document.getElementById('shareUrl').textContent = url;
 }
 
 function renderQueue() {
   const list = document.getElementById('queueList');
-  document.getElementById('queueCount').textContent = queue.length;
+  const empty = document.getElementById('queueEmpty');
+  const count = document.getElementById('queueCount');
+
+  count.textContent = queue.length;
+
   if (queue.length === 0) {
-    list.innerHTML = '<div class="queue-empty" id="queueEmpty">暂无报名，来凑一桌？</div>';
+    empty.style.display = 'block';
+    list.innerHTML = '';
+    list.appendChild(empty);
     return;
   }
+
+  empty.style.display = 'none';
   list.innerHTML = queue.map(p => `
-    <div class="queue-player">
-      <div class="avatar">${p.name.slice(0,1).toUpperCase()}</div>
-      <span class="name">${escHtml(p.name)}</span>
-      ${p.name === myPlayerName ? '<span style="font-size:.7rem;color:var(--gold);opacity:.7">(我)</span>' : ''}
-      <button class="remove-btn" onclick="cancelSignup('${p.id}')" title="取消报名">✕</button>
+    <div class="queue-player ${p.id === myPlayerId ? 'me' : ''}">
+      <div class="avatar">${p.name.charAt(0)}</div>
+      <span>${escHtml(p.name)}</span>
+      ${p.id === myPlayerId ? '<span style="font-size:.7rem;color:var(--gold)">(你)</span>' : ''}
     </div>
   `).join('');
 }
 
 function renderSeats() {
-  const SEAT_ORDER = ['east','south','west','north'];
-  const DIR_LABELS = { east:'东', south:'南', west:'西', north:'北' };
-  SEAT_ORDER.forEach(dir => {
+  const DIRS = ['east', 'south', 'west', 'north'];
+  DIRS.forEach(dir => {
     const el = document.getElementById('seat-' + dir);
+    const diceEl = document.getElementById('dice-' + dir);
     const s = seats[dir];
+
     if (s && s.name) {
-      el.className = `seat seat-${dir} filled can-roll`;
+      el.className = 'seat ' + dir + ' filled' + (isRolling ? ' rolling' : '');
       el.querySelector('.seat-name').textContent = s.name;
-      document.getElementById('dice-' + dir).textContent = s.dice ? s.dice.face : '';
+      diceEl.textContent = s.dice ? `${s.dice.face}${s.dice.num}` : '';
     } else {
-      el.className = `seat seat-${dir} empty`;
+      el.className = 'seat ' + dir + ' empty';
       el.querySelector('.seat-name').textContent = '等待入座';
-      document.getElementById('dice-' + dir).textContent = '';
+      diceEl.textContent = '';
     }
   });
 }
 
 function renderHistory() {
   const list = document.getElementById('historyList');
-  if (history.length === 0) {
-    list.innerHTML = '<div class="no-history" id="historyEmpty">还没有历史记录，开一局吧！</div>';
+  const empty = document.getElementById('historyEmpty');
+
+  if (!history || history.length === 0) {
+    empty.style.display = 'block';
+    list.innerHTML = '';
+    list.appendChild(empty);
     return;
   }
-  const DIR_LABELS = { east:'东', south:'南', west:'西', north:'北' };
-  const DIR_CSS = { east:'e', south:'s', west:'w', north:'n' };
-  list.innerHTML = history.map(h => {
-    const chips = ['east','south','west','north']
-      .filter(d => h.seats[d]?.name)
-      .map(d => `<span class="seat-chip ${DIR_CSS[d]}">${DIR_LABELS[d]}:${escHtml(h.seats[d].name)}</span>`)
-      .join('');
-    const playerCount = ['east','south','west','north'].filter(d => h.seats[d]?.name).length;
+
+  empty.style.display = 'none';
+  list.innerHTML = history.slice().reverse().map((h, idx) => {
+    const playerCount = Object.values(h.seats).filter(s => s.name).length;
+    const chips = Object.entries(h.seats).map(([dir, s]) => {
+      const dirLabel = { east: '东', south: '南', west: '西', north: '北' }[dir];
+      return `<div class="seat-chip"><span class="dir">${dirLabel}</span>${escHtml(s.name || '-')}</div>`;
+    }).join('');
     return `
       <div class="history-item">
-        <div class="game-info">
-          <div class="game-name">第 ${h.round} 局</div>
+        <div class="history-info">
+          <div class="history-round">第 ${h.round} 局</div>
           <div class="game-time">${h.time} · ${playerCount}人</div>
         </div>
         <div class="seats-preview">${chips}</div>
@@ -859,19 +792,55 @@ function renderHistory() {
 }
 
 function updateDrawBtn() {
-  document.getElementById('drawBtn').disabled = queue.length < 4;
+  const btn = document.getElementById('drawBtn');
+  // Only allow draw if I'm in the queue and we have at least 2 people
+  const canDraw = myPlayerId && queue.length >= 2 && !isRolling;
+  btn.disabled = !canDraw;
+  if (queue.length < 2) {
+    btn.title = '至少需要2人才能抽签';
+  } else if (!myPlayerId) {
+    btn.title = '报名后才能抽签';
+  } else {
+    btn.title = '';
+  }
 }
 
 function updateRoundBadge() {
   document.getElementById('roundBadge').textContent = `第 ${currentRound} 局`;
 }
 
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function drawSeats() {
+  if (!myPlayerId || queue.length < 2 || isRolling) return;
+  isRolling = true;
+  document.getElementById('diceRollingText').classList.add('visible');
+  document.querySelectorAll('.seat.filled').forEach(s => s.classList.add('rolling'));
+  socket.emit('draw_seats', { roomId: currentRoomId });
+}
+
+function rerollSeat(dir) {
+  if (!myPlayerId || isRolling) return;
+  const s = seats[dir];
+  if (!s || !s.name) return;
+  socket.emit('reroll_seat', { roomId: currentRoomId, direction: dir });
+}
+
+function resetGame() {
+  if (!myPlayerId) return showToast('报名后才能操作', true);
+  socket.emit('reset_game', { roomId: currentRoomId });
+}
+
+function stopRollingAnim() {
+  document.getElementById('diceRollingText').classList.remove('visible');
+  document.querySelectorAll('.seat.rolling').forEach(s => s.classList.remove('rolling'));
+}
+
 // ─── OVERLAY ──────────────────────────────────────────────────────────────────
 function showRollOverlay(s) {
-  const SEAT_ORDER = ['east','south','west','north'];
-  const DIR_LABELS = { east:'东 🀄', south:'南 🀅', west:'西 🀆', north:'北 🀇' };
-  const DIR_CSS = { east:'e', south:'s', west:'w', north:'n' };
-  const DIR_EMOJI = { east:'🀄', south:'🀅', west:'🀆', north:'🀇' };
+  const SEAT_ORDER = ['east', 'south', 'west', 'north'];
+  const DIR_LABELS = { east: '东 🀄', south: '南 🀅', west: '西 🀆', north: '北 🀇' };
+  const DIR_CSS = { east: 'e', south: 's', west: 'w', north: 'n' };
+  const DIR_EMOJI = { east: '🀄', south: '🀅', west: '🀆', north: '🀇' };
   const container = document.getElementById('rollSeats');
   container.innerHTML = SEAT_ORDER.map(dir => {
     const r = s[dir];
@@ -890,7 +859,7 @@ function closeRollOverlay() {
   document.getElementById('rollOverlay').classList.remove('visible');
 }
 
-// ─── SHARE ─────────────────────────────────────────────────────────────────────
+// ─── SHARE ────────────────────────────────────────────────────────────────────
 function copyShareUrl() {
   const url = document.getElementById('shareUrl').textContent;
   navigator.clipboard.writeText(url).then(() => {
@@ -904,7 +873,7 @@ function copyShareUrl() {
   });
 }
 
-// ─── TOAST ─────────────────────────────────────────────────────────────────────
+// ─── TOAST ────────────────────────────────────────────────────────────────────
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -918,42 +887,42 @@ function launchConfetti() {
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  const colors = ['#ffd54f','#c62828','#1b5e20','#fff','#ef9a9a','#90caf9','#a5d6a7','#ce93d8'];
-  const particles = Array.from({length: 90}, () => ({
-    x: Math.random()*canvas.width, y: -20-Math.random()*100,
-    w: 6+Math.random()*8, h: 4+Math.random()*6,
-    color: colors[Math.floor(Math.random()*colors.length)],
-    angle: Math.random()*Math.PI*2, speed: 2+Math.random()*3,
-    spin: (Math.random()-.5)*.2, drift: (Math.random()-.5)*2,
+  const colors = ['#ffd54f', '#c62828', '#1b5e20', '#fff', '#ef9a9a', '#90caf9', '#a5d6a7', '#ce93d8'];
+  const particles = Array.from({ length: 90 }, () => ({
+    x: Math.random() * canvas.width, y: -20 - Math.random() * 100,
+    w: 6 + Math.random() * 8, h: 4 + Math.random() * 6,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    angle: Math.random() * Math.PI * 2, speed: 2 + Math.random() * 3,
+    spin: (Math.random() - .5) * .2, drift: (Math.random() - .5) * 2,
   }));
   let frame = 0;
   function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles.forEach(p => {
-      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle);
-      ctx.fillStyle = p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
-      p.y += p.speed; p.x += p.drift; p.angle += p.speed*.05;
-      if (p.y > canvas.height+20) { p.y = -20; p.x = Math.random()*canvas.width; }
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.angle);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+      p.y += p.speed; p.x += p.drift; p.angle += p.speed * .05;
+      if (p.y > canvas.height + 20) { p.y = -20; p.x = Math.random() * canvas.width; }
     });
     frame++;
     if (frame < 130) requestAnimationFrame(draw);
-    else ctx.clearRect(0,0,canvas.width,canvas.height);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
   requestAnimationFrame(draw);
 }
 
-// ─── UTILS ─────────────────────────────────────────────────────────────────────
-function sleep(ms) { return new Promise(r => setTimeout(r,ms)); }
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function escHtml(s) {
   if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 window.addEventListener('resize', () => {
   const c = document.getElementById('confettiCanvas');
   if (c) { c.width = window.innerWidth; c.height = window.innerHeight; }
 });
 
-// ─── BOOT ──────────────────────────────────────────────────────────────────────
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>

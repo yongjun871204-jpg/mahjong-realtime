@@ -68,6 +68,18 @@ app.get('/api/stats', (_req, res) => {
 io.on('connection', (socket) => {
   console.log(`🔌 ${socket.id} connected`);
 
+  // ── View Room (viewer mode, no signup required) ────────────────────────────
+  socket.on('view_room', ({ roomId }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback({ ok: false, error: '房间不存在或已过期' });
+
+    socket.join(roomId);
+    socket._roomId = roomId;
+    room._sockets.add(socket.id);
+
+    callback({ ok: true, room: safeRoom(room) });
+  });
+
   // ── Create Room ────────────────────────────────────────────────────────────
   socket.on('create_room', ({ playerName }, callback) => {
     if (!playerName || playerName.trim().length === 0) {
@@ -92,7 +104,7 @@ io.on('connection', (socket) => {
     callback({ ok: true, roomId, room: safeRoom(room) });
   });
 
-  // ── Join Room ───────────────────────────────────────────────────────────────
+  // ── Join Room (signup) ─────────────────────────────────────────────────────
   socket.on('join_room', ({ roomId, playerName }, callback) => {
     if (!playerName || playerName.trim().length === 0) {
       return callback({ ok: false, error: '请输入名字' });
@@ -101,59 +113,50 @@ io.on('connection', (socket) => {
     if (!room) return callback({ ok: false, error: '房间不存在或已过期，请重新创建' });
 
     const cleanName = escHtml(playerName.trim());
-    const existingPlayer = room.queue.find(p => p.name === cleanName);
 
-    if (existingPlayer) {
-      // Name exists - check if it's a reconnect (same socket or allow rejoin)
-      // For simplicity, we'll remove the old entry and let them rejoin
-      room.queue = room.queue.filter(p => p.name !== cleanName);
-      console.log(`🔄 ${cleanName} rejoined room ${roomId}`);
+    // Check if name already exists
+    if (room.queue.some(p => p.name === cleanName)) {
+      return callback({ ok: false, error: '这个名字已经报名了，换一个吧~' });
     }
 
     if (room.queue.length >= MAX_QUEUE) {
       return callback({ ok: false, error: `房间已满（最多${MAX_QUEUE}人）` });
     }
+
     room.queue.push({ id: uuidv4(), name: cleanName, ts: Date.now() });
     room._sockets.add(socket.id);
     socket.join(roomId);
     socket._roomId = roomId;
-    io.to(roomId).emit('queue_updated', room.queue);
+
+    // Broadcast update
+    io.to(roomId).emit('room_update', safeRoom(room));
+
     console.log(`➕ ${playerName} joined room ${roomId} (${room.queue.length} players)`);
-    callback({ ok: true, roomId, room: safeRoom(room) });
+    callback({ ok: true, room: safeRoom(room) });
   });
 
-  // ── Leave Room ──────────────────────────────────────────────────────────────
-  socket.on('leave_room', () => {
-    handleLeave(socket);
-  });
+  // ── Leave Room (cancel signup) ─────────────────────────────────────────────
+  socket.on('leave_room', ({ roomId, playerId }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback({ ok: false, error: '房间不存在' });
 
-  // ── Sign Up ─────────────────────────────────────────────────────────────────
-  socket.on('signup', ({ playerName }, callback) => {
-    const room = rooms[socket._roomId];
-    if (!room) return callback({ ok: false, error: '未加入房间' });
-    const name = escHtml(playerName.trim());
-    if (!name) return callback({ ok: false, error: '名字不能为空' });
-    if (room.queue.length >= MAX_QUEUE) return callback({ ok: false, error: '队列已满' });
-    if (room.queue.some(p => p.name === name)) return callback({ ok: false, error: '这个名字已经报名了' });
-    room.queue.push({ id: uuidv4(), name, ts: Date.now() });
-    io.to(socket._roomId).emit('queue_updated', room.queue);
-    callback({ ok: true, queue: room.queue });
-  });
+    // Find player by ID or by socket
+    const player = room.queue.find(p => p.id === playerId);
+    if (player) {
+      room.queue = room.queue.filter(p => p.id !== playerId);
+      io.to(roomId).emit('room_update', safeRoom(room));
+      io.to(roomId).emit('player_left', { name: player.name, queue: room.queue });
+      console.log(`➖ ${player.name} left room ${roomId} (${room.queue.length} players)`);
+    }
 
-  // ── Cancel Signup ──────────────────────────────────────────────────────────
-  socket.on('cancel_signup', ({ playerId }, callback) => {
-    const room = rooms[socket._roomId];
-    if (!room) return callback({ ok: false, error: '未加入房间' });
-    room.queue = room.queue.filter(p => p.id !== playerId);
-    io.to(socket._roomId).emit('queue_updated', room.queue);
-    callback({ ok: true, queue: room.queue });
+    callback({ ok: true });
   });
 
   // ── Draw Seats ──────────────────────────────────────────────────────────────
-  socket.on('draw_seats', (callback) => {
-    const room = rooms[socket._roomId];
-    if (!room) return callback({ ok: false, error: '未加入房间' });
-    if (room.queue.length < 4) return callback({ ok: false, error: '至少需要4人才能开打' });
+  socket.on('draw_seats', ({ roomId }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback({ ok: false, error: '房间不存在' });
+    if (room.queue.length < 2) return callback({ ok: false, error: '至少需要2人才能抽签' });
 
     const players = room.queue.slice(0, 4);
     const diceResults = {};
@@ -163,7 +166,11 @@ io.on('connection', (socket) => {
     const sorted = [...SEAT_ORDER].sort((a, b) => diceResults[b].num - diceResults[a].num);
     const seats = {};
     SEAT_ORDER.forEach(dir => { seats[dir] = { name: null, dice: diceResults[dir] }; });
-    sorted.forEach((dir, i) => { seats[dir].name = players[i].name; });
+    sorted.forEach((dir, i) => {
+      if (players[i]) seats[dir].name = players[i].name;
+    });
+
+    room.seats = seats;
 
     // Save to history
     const entry = {
@@ -176,46 +183,53 @@ io.on('connection', (socket) => {
     if (room.history.length > MAX_HISTORY) room.history = room.history.slice(0, MAX_HISTORY);
 
     // Broadcast draw result
-    io.to(socket._roomId).emit('draw_result', {
+    io.to(roomId).emit('roll_result', {
       round: room.round,
       seats,
       history: room.history,
-      diceResults,
     });
 
-    // Clear queue and advance round
+    // Remove drawn players from queue and advance round
     room.queue = room.queue.slice(4);
     room.round++;
 
-    io.to(socket._roomId).emit('queue_updated', room.queue);
-    io.to(socket._roomId).emit('room_updated', safeRoom(room));
+    io.to(roomId).emit('room_update', safeRoom(room));
 
-    callback({ ok: true, seats, round: room.round, queue: room.queue });
-    console.log(`🎲 Room ${socket._roomId} drew seats, round ${room.round}`);
+    callback && callback({ ok: true, seats, round: room.round, queue: room.queue });
+    console.log(`🎲 Room ${roomId} drew seats, round ${room.round}`);
   });
 
   // ── Re-roll Single Seat ─────────────────────────────────────────────────────
-  socket.on('reroll_seat', ({ dir }, callback) => {
-    const room = rooms[socket._roomId];
-    if (!room) return callback({ ok: false, error: '未加入房间' });
+  socket.on('reroll_seat', ({ roomId, direction }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback && callback({ ok: false, error: '房间不存在' });
+
     const newDice = randomDice();
-    if (room.seats[dir]) {
-      room.seats[dir].dice = newDice;
+    if (room.seats[direction]) {
+      room.seats[direction].dice = newDice;
     }
-    io.to(socket._roomId).emit('seat_rerolled', { dir, dice: newDice });
-    callback({ ok: true, dice: newDice });
+    io.to(roomId).emit('room_update', safeRoom(room));
+    callback && callback({ ok: true, dice: newDice });
   });
 
   // ── Reset Game ──────────────────────────────────────────────────────────────
-  socket.on('reset_game', (callback) => {
-    const room = rooms[socket._roomId];
-    if (!room) return callback({ ok: false, error: '未加入房间' });
+  socket.on('reset_game', ({ roomId }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback && callback({ ok: false, error: '房间不存在' });
+
     room.queue = [];
     room.seats = {};
     room.round = 1;
-    room.history = [];
-    io.to(socket._roomId).emit('room_reset', safeRoom(room));
-    callback({ ok: true });
+    // Keep history
+
+    io.to(roomId).emit('game_reset', {
+      round: room.round,
+      queue: room.queue,
+      seats: room.seats,
+    });
+
+    callback && callback({ ok: true });
+    console.log(`🔄 Room ${roomId} reset`);
   });
 
   // ── Disconnect ─────────────────────────────────────────────────────────────
@@ -239,7 +253,7 @@ io.on('connection', (socket) => {
     // If room is empty, schedule deletion
     if (room._sockets.size === 0) {
       setTimeout(() => {
-        if (room._sockets.size === 0) {
+        if (rooms[rid] && rooms[rid]._sockets.size === 0) {
           delete rooms[rid];
           console.log(`🗑 Room ${rid} removed (empty)`);
         }
