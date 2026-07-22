@@ -379,6 +379,7 @@
     <div class="actions">
       <button class="btn btn-primary" id="drawBtn" onclick="drawSeats()" disabled>🎲 抽签入座</button>
       <button class="btn btn-secondary" onclick="resetGame()">🔄 重新开局</button>
+      <button class="btn btn-ghost" onclick="logout()">🚪 退出房间</button>
     </div>
 
     <!-- History -->
@@ -404,6 +405,21 @@ let seats = {};
 let history = [];
 let isRolling = false;
 
+// ─── LOCAL STORAGE KEYS ───────────────────────────────────────────────────────
+const LS_KEY_NAME = 'mahjong_name';
+const LS_KEY_ROOM = 'mahjong_room';
+
+// ─── LOCAL STORAGE HELPERS ────────────────────────────────────────────────────
+function saveToLS(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
+}
+function loadFromLS(key, defaultVal = null) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : defaultVal; } catch(e) { return defaultVal; }
+}
+function clearLS() {
+  try { localStorage.removeItem(LS_KEY_NAME); localStorage.removeItem(LS_KEY_ROOM); } catch(e) {}
+}
+
 // ─── ROUTING ─────────────────────────────────────────────────────────────────
 function getRoomIdFromUrl() {
   const hash = window.location.hash;
@@ -414,12 +430,28 @@ function getRoomIdFromUrl() {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
   const roomId = getRoomIdFromUrl();
+  const savedName = loadFromLS(LS_KEY_NAME);
+  const savedRoom = loadFromLS(LS_KEY_ROOM);
+
+  // Case 1: URL has roomId → try to auto-join with saved name
   if (roomId) {
-    // Auto-join: show join tab with roomId pre-filled
-    showLandingWithJoin(roomId);
-  } else {
-    showLanding();
+    if (savedName) {
+      // Auto-join with saved name
+      autoJoinRoom(roomId, savedName);
+    } else {
+      showLandingWithJoin(roomId);
+    }
+    return;
   }
+
+  // Case 2: No URL roomId, but has saved room+name → ask to rejoin
+  if (savedRoom && savedName) {
+    showRejoinPrompt(savedRoom, savedName);
+    return;
+  }
+
+  // Case 3: Fresh start
+  showLanding();
 }
 
 function showLandingWithJoin(roomId) {
@@ -427,7 +459,96 @@ function showLandingWithJoin(roomId) {
   document.getElementById('game').style.display = 'none';
   switchTab('join');
   document.getElementById('joinRoomId').value = roomId;
-  document.getElementById('joinRoomId').focus();
+  // Pre-fill saved name if exists
+  const savedName = loadFromLS(LS_KEY_NAME);
+  if (savedName) {
+    document.getElementById('joinName').value = savedName;
+  }
+  document.getElementById('joinName').focus();
+}
+
+// ─── AUTO JOIN ────────────────────────────────────────────────────────────────
+function autoJoinRoom(roomId, playerName) {
+  if (!socket) connectSocket();
+  socket.emit('join_room', { roomId, playerName }, (res) => {
+    if (!res.ok) {
+      // Auto-join failed, show join form
+      showLandingWithJoin(roomId);
+      showToast(res.error, true);
+      return;
+    }
+    // Success
+    myPlayerName = playerName;
+    myPlayerId = res.room.queue.find(p => p.name === playerName)?.id;
+    currentRoomId = res.room.id;
+    currentRound = res.room.round || 1;
+    queue = res.room.queue || [];
+    seats = res.room.seats || {};
+    history = res.room.history || [];
+    saveToLS(LS_KEY_NAME, playerName);
+    saveToLS(LS_KEY_ROOM, currentRoomId);
+    window.location.hash = currentRoomId;
+    showGame();
+    renderShareUrl();
+    renderQueue();
+    renderSeats();
+    renderHistory();
+    updateRoundBadge();
+    updateDrawBtn();
+    showToast(`👋 欢迎回来，${playerName}！`);
+  });
+}
+
+// ─── REJOIN PROMPT ────────────────────────────────────────────────────────────
+function showRejoinPrompt(roomId, playerName) {
+  document.getElementById('landing').classList.add('active');
+  document.getElementById('game').style.display = 'none';
+
+  // Create rejoin UI
+  const landingWrap = document.querySelector('.landing-wrap');
+  const existing = document.getElementById('rejoinPanel');
+  if (existing) existing.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'rejoinPanel';
+  panel.innerHTML = `
+    <div class="landing-logo">🀄</div>
+    <p style="text-align:center;color:rgba(245,240,225,.7);margin-bottom:20px;">
+      检测到之前的房间<br>
+      <strong style="color:var(--gold)">${roomId}</strong>
+    </p>
+    <div style="display:flex;gap:10px;flex-direction:column;">
+      <button class="btn btn-primary" onclick="rejoinLastRoom()">
+        🔄 重新进入房间（${playerName}）
+      </button>
+      <button class="btn btn-secondary" onclick="startFresh()">
+        🆕 创建新房间
+      </button>
+    </div>
+  `;
+
+  // Hide original content
+  document.querySelector('.landing-desc').style.display = 'none';
+  document.querySelector('.landing-tabs').style.display = 'none';
+  document.getElementById('panelCreate').style.display = 'none';
+  document.getElementById('panelJoin').style.display = 'none';
+  document.querySelector('.landing-features').style.display = 'none';
+
+  landingWrap.insertBefore(panel, landingWrap.children[2]);
+}
+
+function rejoinLastRoom() {
+  const roomId = loadFromLS(LS_KEY_ROOM);
+  const playerName = loadFromLS(LS_KEY_NAME);
+  if (roomId && playerName) {
+    window.location.hash = roomId;
+    autoJoinRoom(roomId, playerName);
+  }
+}
+
+function startFresh() {
+  clearLS();
+  location.reload();
 }
 
 function showLanding() {
@@ -526,6 +647,9 @@ async function handleCreate() {
     queue = res.room.queue || [];
     seats = res.room.seats || {};
     history = res.room.history || [];
+    // Save to localStorage for auto-rejoin
+    saveToLS(LS_KEY_NAME, name);
+    saveToLS(LS_KEY_ROOM, currentRoomId);
     window.location.hash = currentRoomId;
     showGame();
     renderShareUrl();
@@ -553,6 +677,9 @@ async function handleJoin() {
     queue = res.room.queue || [];
     seats = res.room.seats || {};
     history = res.room.history || [];
+    // Save to localStorage for auto-rejoin
+    saveToLS(LS_KEY_NAME, name);
+    saveToLS(LS_KEY_ROOM, currentRoomId);
     window.location.hash = currentRoomId;
     showGame();
     renderShareUrl();
@@ -636,6 +763,18 @@ function resetGame() {
   if (queue.length === 0 && Object.keys(seats).length === 0) return;
   if (!confirm('确定要重新开局？报名队列和座位都将清空。')) return;
   socket.emit('reset_game', () => {});
+}
+
+// ─── LOGOUT / CLEAR DATA ──────────────────────────────────────────────────────
+function logout() {
+  if (!confirm('确定要退出当前房间？你的报名将被取消。')) return;
+  clearLS();
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+  window.location.hash = '';
+  location.reload();
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
